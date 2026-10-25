@@ -144,6 +144,26 @@ Ayuda     ── Glosario y limitaciones
 └──────────────────────────────────────────────────────────────────────────────┘
 ```
 
+**Página "Vías y fronteras"**
+
+```
+┌──────────────────────────────────────────────────────────────────────────────┐
+│ Vías de ingreso y puestos fronterizos                                        │
+│ Gráficas a mostrar: (7. Vías de ingreso) (8. Puestos fronterizos)            │
+│ [Años ════●══════●]                      [Tipo de visitante ▾]               │
+│──────────────────────────────────────────────────────────────────────────────│
+│ 7. ¿Por dónde ingresan los          │ 8. ¿Qué puestos fronterizos reciben    │
+│    visitantes?                      │    más visitantes?                     │
+│ [ Anual | Mensual ]                 │ [ Solo el período elegido | Todo ]     │
+│ [ Misma para todas | Propia ]       │ [Cantidad de puestos ═●═]              │
+│  Aérea      ▁▂▃▄▅▆▇▂▄▅▆  ◀ clic   │ Mostrando: Aérea, 2019                 │
+│  Marítima   ▁▁▁▁▁▁                 │ La Aurora      ████████████ 99.8 %     │
+│  Terrestre  ▂▃▄▅▆▇█▂▃▆▇      │ Mundo Maya     ▏ 0.2 %                 │
+│ ✓ Seleccionó Aérea · 2019           │ Lo que muestran los datos: …           │
+│ Participación: Terrestre 59 % …     │ ⓘ no indica capacidad ni causas        │
+└──────────────────────────────────────────────────────────────────────────────┘
+```
+
 **Página "Pronósticos de modelos"**
 
 ```

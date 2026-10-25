@@ -21,7 +21,8 @@ paginas = {
     ],
     "Explorar": [
         st.Page("paginas/exploracion.py", title="Llegadas y mercados", icon=":material/public:"),
-        st.Page("paginas/estacionalidad.py", title="Estacionalidad y vías", icon=":material/calendar_month:"),
+        st.Page("paginas/estacionalidad.py", title="Estacionalidad", icon=":material/calendar_month:"),
+        st.Page("paginas/vias.py", title="Vías y fronteras", icon=":material/flight_land:"),
     ],
     "Estimar": [
         st.Page("paginas/pronosticos.py", title="Pronósticos de modelos", icon=":material/insights:"),

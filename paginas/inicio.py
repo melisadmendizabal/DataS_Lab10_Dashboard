@@ -45,11 +45,13 @@ with izquierda:
    → *Llegadas y mercados*
 2. **¿De qué regiones y países vienen los visitantes, y qué tan concentrados están?**
    → *Llegadas y mercados*
-3. **¿En qué meses se concentra la demanda y por dónde ingresan los visitantes?**
-   → *Estacionalidad y vías* (en construcción)
-4. **¿Cuántos visitantes se esperan y qué tan confiables son esas estimaciones?**
+3. **¿En qué meses se concentra la demanda?**
+   → *Estacionalidad*
+4. **¿Por qué vías y puestos fronterizos ingresan los visitantes?**
+   → *Vías y fronteras*
+5. **¿Cuántos visitantes se esperan y qué tan confiables son esas estimaciones?**
    → *Pronósticos de modelos*
-        """
+"""
     )
 with derecha:
     st.subheader("Cómo usarlo")

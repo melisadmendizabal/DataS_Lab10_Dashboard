@@ -11,6 +11,10 @@ st.markdown(
   en las comparaciones de todo el período.
 - **Región de residencia:** agrupación geográfica del país donde vive el visitante
   (no necesariamente su nacionalidad).
+- **Crucerista:** pasajero de crucero que desembarca por el día; la base lo registra hasta 2022.
+- **Vía de ingreso:** forma en que el visitante entra al país: aérea, terrestre o marítima.
+- **Puesto fronterizo:** punto de control migratorio por el que se registra la entrada
+  (un aeropuerto, una frontera terrestre o un puerto).
 - **Modelo de pronóstico:** procedimiento que aprende el patrón de los datos pasados para
   estimar valores futuros.
 - **Error promedio (MAE):** cuántos visitantes por mes se equivocó un modelo, en promedio.
