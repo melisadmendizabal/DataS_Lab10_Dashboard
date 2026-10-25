@@ -73,3 +73,17 @@ def resultados_modelos():
     metricas = pd.DataFrame(filas).sort_values("rmse").reset_index(drop=True)
 
     return serie_entrenamiento, predicciones, metricas
+
+from pathlib import Path  # noqa: E402
+
+RUTA_LSTM = Path(__file__).resolve().parents[1] / "Lab2" / "resultados_lstm_aerea.csv"
+
+
+@st.cache_data
+def resultados_lstm():
+    """
+    Búsqueda de configuraciones de la red LSTM del Laboratorio 2 (vía aérea): una fila por
+    configuración probada, con su error de validación (val_loss, en datos escalados 0–1).
+    No se entrena nada aquí: solo se leen los resultados ya guardados.
+    """
+    return pd.read_csv(RUTA_LSTM)
