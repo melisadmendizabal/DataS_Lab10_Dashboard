@@ -12,7 +12,6 @@ RUTA_DATOS = Path(__file__).resolve().parents[1] / "Lab1" / "migracion_guatemala
 # Según las notas de la base, la categoría "Viajero" cambió de forma fuerte entre 2022 y 2023,
 # por eso la serie comparable de todo el período usa solo Turista + Excursionista (igual que en Lab 1).
 TIPOS_COMPARABLES = ["Turista", "Excursionista"]
-
 INICIO_PANDEMIA = pd.Timestamp("2020-03-01")
 FIN_PANDEMIA = pd.Timestamp("2021-12-01")
 CAMBIO_METODOLOGICO = pd.Timestamp("2023-01-01")

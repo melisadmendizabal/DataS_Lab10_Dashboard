@@ -7,7 +7,7 @@ import streamlit as st
 
 from utils.estilo import (AQUA_SARIMA, AZUL_OBSERVADO, COLORES_MODELO,
                           ESTILO_LINEA_MODELO, encabezado_visualizacion,
-                          etiqueta_mes, mostrar_grafica)
+                          etiqueta_mes, mostrar_grafica, selector_graficas)
 from utils.modelos import resultados_modelos
 
 MODELOS = ["Holt-Winters", "SARIMA", "Ingenuo estacional"]
@@ -33,96 +33,102 @@ st.caption(
     "Los modelos son los mismos del Laboratorio 1 (total mensual de turistas + excursionistas); "
     "no se construyeron modelos nuevos."
 )
+visibles = selector_graficas({
+    "v4": "4. Estimaciones vs. observado",
+    "tabla": "Comparación de errores",
+}, key="graficas_pronosticos")
 
 # =============================================================================
 # V4. Estimaciones vs. observado
 # =============================================================================
-st.divider()
-encabezado_visualizacion(
-    4, "¿Qué tan cerca estuvieron los modelos de lo que realmente pasó?",
-    "La línea azul es lo observado; las demás son las estimaciones de cada modelo para el mismo período.",
-    "decidir cuánto confiar en una proyección antes de usarla para planificar presupuesto, "
-    "personal o capacidad hotelera.",
-)
+if "v4" in visibles:
+    st.divider()
+    encabezado_visualizacion(
+        4, "¿Qué tan cerca estuvieron los modelos de lo que realmente pasó?",
+        "La línea azul es lo observado; las demás son las estimaciones de cada modelo para el mismo período.",
+        "decidir cuánto confiar en una proyección antes de usarla para planificar presupuesto, "
+        "personal o capacidad hotelera.",
+    )
 
-c1, c2, c3 = st.columns([3, 1.3, 1.3])
-elegidos = c1.multiselect("Modelos a mostrar", MODELOS, default=MODELOS,
-                          help="\n\n".join(f"**{m}:** {d}" for m, d in DESCRIPCION_MODELO.items()))
-ver_historia = c2.toggle("Ver datos de aprendizaje", value=False,
-                         help="Muestra también los meses con los que aprendieron los modelos (2009–2021).")
-ver_intervalo = c3.toggle("Ver incertidumbre de SARIMA", value=False,
-                          help="Rango donde SARIMA espera el valor real con 95 % de probabilidad.",
-                          disabled="SARIMA" not in elegidos)
+    c1, c2, c3 = st.columns([3, 1.3, 1.3])
+    elegidos = c1.multiselect("Modelos a mostrar", MODELOS, default=MODELOS,
+                              help="\n\n".join(f"**{m}:** {d}" for m, d in DESCRIPCION_MODELO.items()))
+    ver_historia = c2.toggle("Ver datos de aprendizaje", value=False,
+                             help="Muestra también los meses con los que aprendieron los modelos (2009–2021).")
+    ver_intervalo = c3.toggle("Ver incertidumbre de SARIMA", value=False,
+                              help="Rango donde SARIMA espera el valor real con 95 % de probabilidad.",
+                              disabled="SARIMA" not in elegidos)
 
-fig4 = go.Figure()
-if ver_historia:
+    fig4 = go.Figure()
+    if ver_historia:
+        fig4.add_trace(go.Scatter(
+            x=serie_entrenamiento.index, y=serie_entrenamiento.values, mode="lines",
+            line=dict(color=AZUL_OBSERVADO, width=1.5), opacity=0.45,
+            name="Observado (aprendizaje)",
+            hovertemplate="%{y:,.0f}<extra>Observado</extra>",
+        ))
+        fig4.add_vline(x=inicio_prueba, line_width=1, line_color="#898781")
+        fig4.add_annotation(x=inicio_prueba, y=1, yref="paper", text="Inicio de la evaluación",
+                            showarrow=False, xanchor="left", yanchor="top",
+                            font=dict(color="#898781", size=12))
+
+    if ver_intervalo and "SARIMA" in elegidos:
+        fig4.add_trace(go.Scatter(
+            x=list(predicciones.index) + list(predicciones.index[::-1]),
+            y=list(predicciones["sarima_superior"]) + list(predicciones["sarima_inferior"][::-1]),
+            fill="toself", fillcolor="rgba(27,175,122,0.12)", line=dict(width=0),
+            hoverinfo="skip", name="Incertidumbre SARIMA (95 %)",
+        ))
+
+    for modelo in elegidos:
+        fig4.add_trace(go.Scatter(
+            x=predicciones.index, y=predicciones[modelo], mode="lines", name=modelo,
+            line=dict(color=COLORES_MODELO[modelo], width=2, dash=ESTILO_LINEA_MODELO[modelo]),
+            hovertemplate="%{y:,.0f}<extra>" + modelo + "</extra>",
+        ))
+        # etiqueta directa al final de cada línea, dentro del área de la gráfica
+        # (sin margen extra a la derecha, que en pantallas angostas quita mucho ancho)
+        fig4.add_annotation(x=fin_prueba, y=predicciones[modelo].iloc[-1], text=modelo,
+                            showarrow=False, xanchor="right", yanchor="bottom", yshift=4,
+                            font=dict(color="#52514e", size=12))
+
     fig4.add_trace(go.Scatter(
-        x=serie_entrenamiento.index, y=serie_entrenamiento.values, mode="lines",
-        line=dict(color=AZUL_OBSERVADO, width=1.5), opacity=0.45,
-        name="Observado (aprendizaje)",
-        hovertemplate="%{y:,.0f}<extra>Observado</extra>",
+        x=predicciones.index, y=predicciones["real"], mode="lines", name="Observado",
+        line=dict(color=AZUL_OBSERVADO, width=2.5),
+        hovertemplate="<b>%{y:,.0f}</b><extra>Observado</extra>",
     ))
-    fig4.add_vline(x=inicio_prueba, line_width=1, line_color="#898781")
-    fig4.add_annotation(x=inicio_prueba, y=1, yref="paper", text="Inicio de la evaluación",
-                        showarrow=False, xanchor="left", yanchor="top",
-                        font=dict(color="#898781", size=12))
+    fig4.update_layout(
+        height=450, hovermode="x unified",
+        yaxis=dict(title="Visitantes por mes", tickformat="~s", rangemode="tozero"),
+        xaxis=dict(title=None, hoverformat="%m/%Y"),
+    )
+    mostrar_grafica(fig4, key="v4_pronosticos")
 
-if ver_intervalo and "SARIMA" in elegidos:
-    fig4.add_trace(go.Scatter(
-        x=list(predicciones.index) + list(predicciones.index[::-1]),
-        y=list(predicciones["sarima_superior"]) + list(predicciones["sarima_inferior"][::-1]),
-        fill="toself", fillcolor="rgba(27,175,122,0.12)", line=dict(width=0),
-        hoverinfo="skip", name="Incertidumbre SARIMA (95 %)",
-    ))
-
-for modelo in elegidos:
-    fig4.add_trace(go.Scatter(
-        x=predicciones.index, y=predicciones[modelo], mode="lines", name=modelo,
-        line=dict(color=COLORES_MODELO[modelo], width=2, dash=ESTILO_LINEA_MODELO[modelo]),
-        hovertemplate="%{y:,.0f}<extra>" + modelo + "</extra>",
-    ))
-    # etiqueta directa al final de cada línea
-    fig4.add_annotation(x=fin_prueba, y=predicciones[modelo].iloc[-1], text=modelo,
-                        showarrow=False, xanchor="left", xshift=6,
-                        font=dict(color="#52514e", size=12))
-
-fig4.add_trace(go.Scatter(
-    x=predicciones.index, y=predicciones["real"], mode="lines", name="Observado",
-    line=dict(color=AZUL_OBSERVADO, width=2.5),
-    hovertemplate="<b>%{y:,.0f}</b><extra>Observado</extra>",
-))
-fig4.update_layout(
-    height=450, hovermode="x unified",
-    yaxis=dict(title="Visitantes por mes", tickformat="~s", rangemode="tozero"),
-    xaxis=dict(title=None, hoverformat="%m/%Y"),
-    margin=dict(r=130),
-)
-mostrar_grafica(fig4, key="v4_pronosticos")
-
-if not elegidos:
-    st.info("Seleccione al menos un modelo para comparar sus estimaciones con lo observado.",
-            icon=":material/info:")
+    if not elegidos:
+        st.info("Seleccione al menos un modelo para comparar sus estimaciones con lo observado.",
+                icon=":material/info:")
 
 # -- tabla comparativa (elemento complementario) -------------------------------
-st.markdown("##### Comparación de errores")
-tabla = metricas.copy()
-tabla.insert(0, "posición", range(1, len(tabla) + 1))
-st.dataframe(
-    tabla, hide_index=True,
-    column_config={
-        "posición": st.column_config.NumberColumn("Posición", width="small"),
-        "modelo": st.column_config.TextColumn("Modelo"),
-        "mae": st.column_config.NumberColumn(
-            "Error promedio (visitantes/mes)", format="%,.0f",
-            help="MAE: en promedio, cuántos visitantes por mes se equivocó el modelo."),
-        "rmse": st.column_config.NumberColumn(
-            "Error que castiga fallos grandes", format="%,.0f",
-            help="RMSE: como el error promedio, pero pesa más los meses con errores grandes."),
-        "mape": st.column_config.NumberColumn(
-            "Error promedio (%)", format="%.1f %%",
-            help="MAPE: error promedio como porcentaje del valor real."),
-    },
-)
+if "tabla" in visibles:
+    st.markdown("##### Comparación de errores")
+    tabla = metricas.copy()
+    tabla.insert(0, "posición", range(1, len(tabla) + 1))
+    st.dataframe(
+        tabla, hide_index=True,
+        column_config={
+            "posición": st.column_config.NumberColumn("Posición", width="small"),
+            "modelo": st.column_config.TextColumn("Modelo"),
+            "mae": st.column_config.NumberColumn(
+                "Error promedio (visitantes/mes)", format="%,.0f",
+                help="MAE: en promedio, cuántos visitantes por mes se equivocó el modelo."),
+            "rmse": st.column_config.NumberColumn(
+                "Error que castiga fallos grandes", format="%,.0f",
+                help="RMSE: como el error promedio, pero pesa más los meses con errores grandes."),
+            "mape": st.column_config.NumberColumn(
+                "Error promedio (%)", format="%.1f %%",
+                help="MAPE: error promedio como porcentaje del valor real."),
+        },
+    )
 
 mejor = metricas.iloc[0]
 menor_subestimacion = min(

@@ -56,6 +56,7 @@ with derecha:
     st.markdown(
         """
 - Use el **menú lateral** para cambiar de sección.
+- En **«Gráficas a mostrar»**, arriba de cada página, elija qué gráficas ver.
 - **Arrastre** sobre una gráfica de tiempo para elegir un período;
   las gráficas de abajo se actualizan con ese período.
 - **Haga clic** en una barra para ver más detalle.
@@ -65,6 +66,6 @@ with derecha:
     )
     st.info(
         "**Colores con significado fijo:** azul = datos observados · "
-        "naranja y aqua = estimaciones de modelos · gris = referencia o contexto.",
+        "verde y aqua = estimaciones de modelos · gris = referencia o contexto.",
         icon=":material/palette:",
     )

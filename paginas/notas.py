@@ -42,7 +42,7 @@ st.markdown(
 | Color | Significado |
 |---|---|
 | Azul | Datos observados (lo que realmente ocurrió) |
-| Naranja | Estimación del modelo Holt-Winters |
+| Verde | Estimación del modelo Holt-Winters |
 | Aqua | Estimación del modelo SARIMA |
 | Gris | Referencia o contexto: modelo ingenuo, pandemia, elementos no seleccionados |
     """
